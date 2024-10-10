@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados del Cuestionario</title>
+    <link rel="stylesheet" href="respuestas_style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        .score {
+            font-size: 1.5em;
+            margin-top: 20px;
+        }
+        .score.green {
+            color: green;
+        }
+        .score.red {
+            color: red;
+        }
+        .result-item {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .result-item.correct {
+            background-color: #e0ffe0; /* Color de fondo verde claro */
+            border: 2px solid green;
+        }
+        .result-item.incorrect {
+            background-color: #ffe0e0; /* Color de fondo rojo claro */
+            border: 2px solid red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Resultados del Cuestionario</h1>
+        </header>
+        <main>
+            <div id="results" class="results-container">
+                <!-- Los resultados se insertarán aquí dinámicamente -->
+            </div>
+            <a href="index.html" class="back-btn">Volver al cuestionario</a>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const resultsContainer = document.getElementById('results');
+            const params = new URLSearchParams(window.location.search);
+            const nombre = params.get('nombre');
+            const correctAnswers = [
+                "C", // 1
+                "D", // 2
+                "B", // 3
+                "C", // 4
+                "B", // 5
+                "C", // 6
+                "B", // 7
+                "C", // 8
+                "B", // 9
+                "C"  // 10
+            ];
+            const questions = [
+                "¿Qué es un manipulador de alimentos?",
+                "¿Qué sucede cuando una persona no se lava las manos?",
+                "¿A qué se refiere la inocuidad de los alimentos?",
+                "¿Qué es contaminación cruzada y cuándo se produce?",
+                "¿Cuáles son los agentes externos o contaminantes de los alimentos?",
+                "Enumere dos (2) contaminantes Físicos y cómo llegan a los alimentos",
+                "¿Cómo llegan los contaminantes Químicos a los alimentos? Mencione 2 de ellos.",
+                "¿Qué son las ETAS?",
+                "¿Qué es una Infección Alimentaria?",
+                "¿Qué es una Intoxicación Alimentaria?"
+            ];
+
+            let resultsHTML = `<h2>Resumen de las respuestas de ${nombre || 'Participante'}:</h2>`;
+            let score = 0;
+
+            for (let i = 1; i <= 10; i++) {
+                let answer = params.get(`q${i}`) || 'No respondida';
+
+                // Determinar si la respuesta es correcta o incorrecta
+                const isCorrect = answer === correctAnswers[i - 1];
+                if (isCorrect) {
+                    score++;
+                }
+
+                // Agregar la clase correcta o incorrecta al resultado
+                const resultClass = isCorrect ? 'correct' : 'incorrect';
+
+                resultsHTML += `
+                    <div class="result-item ${resultClass}">
+                        <h3>Pregunta ${i}:</h3>
+                        <p>${questions[i-1]}</p>
+                        <p><strong>Tu respuesta:</strong> ${answer}</p>
+                        <p><strong>Respuesta correcta:</strong> ${correctAnswers[i - 1]}</p>
+                    </div>
+                `;
+            }
+
+            const totalQuestions = correctAnswers.length;
+            const percentageScore = (score / totalQuestions) * 100;
+            const scoreClass = percentageScore > 60 ? 'green' : 'red';
+
+            resultsHTML += `
+                <div class="score ${scoreClass}">
+                    <strong>Puntaje: ${percentageScore.toFixed(2)}%</strong>
+                </div>
+            `;
+
+            resultsContainer.innerHTML = resultsHTML;
+        });
+    </script>
+</body>
+</html>
